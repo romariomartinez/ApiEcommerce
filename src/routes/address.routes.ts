@@ -8,7 +8,15 @@ import {
 import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
-
+/**
+ * @swagger
+ * /swagger-test:
+ *   get:
+ *     summary: Swagger test endpoint
+ *     responses:
+ *       200:
+ *         description: OK
+ */
 /* ─────────────────────────────
    All address routes require auth
 ───────────────────────────── */

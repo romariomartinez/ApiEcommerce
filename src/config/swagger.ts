@@ -28,7 +28,9 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ['src/routes/*.ts'], // donde leerá los comentarios
+
+  // 🔥 ESTA ERA LA CAUSA
+  apis: ['src/routes/**/*.ts'],
 };
 
 export default options;

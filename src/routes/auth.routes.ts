@@ -3,7 +3,15 @@ import { register, login } from '../controllers/auth.controller';
 import { authLimiter } from '../middlewares/rate-limit.middleware';
 
 const router = Router();
-
+/**
+ * @swagger
+ * /swagger-test:
+ *   get:
+ *     summary: Swagger test endpoint
+ *     responses:
+ *       200:
+ *         description: OK
+ */
 /* ─────────────────────────────
    Authentication
 ───────────────────────────── */
