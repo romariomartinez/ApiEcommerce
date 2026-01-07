@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
@@ -19,13 +20,35 @@ import addressRoutes from './routes/address.routes';
 import { httpLogger } from './middlewares/logger.middleware';
 import { generalLimiter } from './middlewares/rate-limit.middleware';
 
-
-
 const app = express();
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 /* ─────────────────────────────
-   Global middlewares (FIRST)
+   CORS (PRIMERO DE TODO)
+───────────────────────────── */
+
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
+
+/* ─────────────────────────────
+   Global middlewares
 ───────────────────────────── */
 app.use(httpLogger);
 app.use(generalLimiter);
@@ -33,11 +56,10 @@ app.use(generalLimiter);
 /* ─────────────────────────────
    Body parsers
 ───────────────────────────── */
-// JSON for normal routes
 app.use(express.json());
 
 /* ─────────────────────────────
-   Technical routes
+   Health check
 ───────────────────────────── */
 app.get('/health', (_req, res) => {
   res.status(200).json({
@@ -48,7 +70,7 @@ app.get('/health', (_req, res) => {
 });
 
 /* ─────────────────────────────
-   API v1
+   API v1 routes
 ───────────────────────────── */
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);
@@ -68,12 +90,12 @@ app.use(
 );
 
 /* ─────────────────────────────
-   Documentation
+   Swagger documentation
 ───────────────────────────── */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* ─────────────────────────────
-   404 handler
+   404 handler (SIEMPRE AL FINAL)
 ───────────────────────────── */
 app.use((_req, res) => {
   res.status(404).json({
